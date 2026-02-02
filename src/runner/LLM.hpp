@@ -742,7 +742,10 @@ public:
 
             token_ids.push_back(max_index);
             cached_token.push_back(max_index);
-            ALOGI("ttft: %.2f ms", ttft_timer.cost());
+
+            float ttft_ms = ttft_timer.cost();
+            float prefill_token_per_sec = input_embed_num / (ttft_ms / 1000.0);
+            ALOGN("prefill: %d tokens, ttft: %.2f ms, prefill speed: %.2f token/s", input_embed_num, ttft_ms, prefill_token_per_sec);
         }
         t_cost.start();
 
@@ -861,7 +864,7 @@ public:
         printf("\n\n");
         fflush(stdout);
         float t_cost_ms = t_cost.cost();
-        ALOGN("hit eos,avg %.2f token/s\n", token_ids.size() / (t_cost_ms / 1000));
+        ALOGN("hit eos, decode: %d tokens, %.2f token/s\n", token_ids.size(), token_ids.size() / (t_cost_ms / 1000));
 
         // 去掉 len_of_input 那部分
         // token_ids.erase(token_ids.begin(), token_ids.begin() + len_of_input);
